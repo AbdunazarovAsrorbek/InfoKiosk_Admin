@@ -30,6 +30,7 @@ export const ADD_DEPARTMENT_LIST = "/api/v1/department/create";
 export const UPDATE_DEPARTMENT_LIST = `/api/v1/department/update`;
 export const DELETE_DEPARTMENT_LIST = "/api/v1/department/delete";
 export const DEPARTMENT_PAGINATION = "/api/v1/department/pagination"
+export const DEPARTMENT_QR_CODE = "/api/v1/qr-code/download/rate"
 
 // Faculty 
 export const GET_FACULTY_LIST = "/api/v1/faculty-centre/findAll";
@@ -37,17 +38,23 @@ export const ADD_FACULTY_LIST = "/api/v1/faculty-centre/create";
 export const UPDATE_FACULTY_LIST = "/api/v1/faculty-centre/update";
 export const DELETE_FACULTY_LIST = "/api/v1/faculty-centre/delete";
 export const FACULTY_PAGINATION = "/api/v1/faculty-centre/pagination"
+export const FACULTY_QR_CODE = "/api/v1/qr-code/download/rate/faculty";
 
 // Users Rate
 export const GET_USERS_RATE = "/api/v1/rate/filter"
 
-// Department QR
-export const DEPARTMENT_QR_CODE = "/api/v1/qr-code/download/rate"
 
 // Application
 export const GET_APPLICATION_LIST = "/api/v1/application/filter";
-// export const APPLY_APPLICATION = "/api/v1/application/apply";
 export const DELETE_APPLICATION = "/api/v1/application/delete";
 export const CHANGE_APPLICATION_STATUS = "/api/v1/application/change-status";
 export const MEET_APPLICATION = "/api/v1/application/meet-at";
 export const APPLICATION_QR_CODE = "/api/v1/qr-code/download/apply"
+
+// Rector
+export const GET_RECTOR_LIST = "/api/v1/rektor-qabul/findAll";
+export const GET_RECTOR_BY_ID = "/api/v1/rektor-qabul/findById";
+export const DELETE_RECTOR = "/api/v1/rektor-qabul/delete";
+export const UPDATE_RECTOR = "/api/v1/rektor-qabul/update";
+export const CREATE_RECTOR = "/api/v1/rektor-qabul/apply";
+

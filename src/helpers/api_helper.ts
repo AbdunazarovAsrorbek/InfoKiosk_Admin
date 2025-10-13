@@ -227,6 +227,12 @@ class APIClient {
         return axios.post(url + "/" + id)
     }
 
+    createFacultyQrCode = (url: string, facultyAndCenterId : any) => {
+        return axios.post(`${url}/${facultyAndCenterId }`, null, {
+            responseType: "blob",
+        });
+    };
+
     // Users Rate
     getUsersRate = (url: any, data: any) => {
         return axios.get(`${url}?page=${data.page}&size=${data.size}`);
@@ -236,10 +242,6 @@ class APIClient {
     getApplication = (url: any, data: any, params?: any) => {
         return axios.get(`${url}?page=${data.page}&size=${data.size}`, { params });
     };
-
-    // applyApplication = (url: any, data: any) => {
-    //     return axios.post(url, data);
-    // };
 
     deleteApplication = (url: any, id: number) => {
         return axios.post(`${url}/${id}`);
@@ -261,6 +263,27 @@ class APIClient {
         return axios.post(url, {}, {
             responseType: "blob",
         });
+    };
+
+    // Rector
+    getRector = (url: string) => {
+        return axios.get(url);
+    };
+
+    getRectorById = (url: string, id: number) => {
+        return axios.get(`${url}/${id}`);
+    };
+
+    deleteRector = (url: string, id: number) => {
+        return axios.post(`${url}/${id}`);
+    };
+
+    updateRector = (url: string, id: number, data: any) => {
+        return axios.post(`${url}/${id}`, data);
+    };
+
+    createRector = (url: string, data: any) => {
+        return axios.post(url, data);
     };
 }
 

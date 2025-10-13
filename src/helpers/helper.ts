@@ -34,6 +34,7 @@ export const getDepartmentById = (id: any) => api.getDepartmentById(url.GET_DEPA
 export const addDepartmentList = (data: any) => api.createDepartment(url.ADD_DEPARTMENT_LIST, data);
 export const updateDepartmentList = ({ id, updateFormData }: any) => api.updateDepartment(url.UPDATE_DEPARTMENT_LIST, { id, updateFormData });
 export const deleteDepartmentList = (id: any) => api.deleteDepartment(url.DELETE_DEPARTMENT_LIST, id);
+export const createDepartmentQrCodeList = (departmentId: any) => api.createDepartmentQrCode(url.DEPARTMENT_QR_CODE, departmentId)
 
 // Faculty
 export const getFacultyList = () => api.getFaculty(url.GET_FACULTY_LIST);
@@ -41,20 +42,15 @@ export const facultyPaginationList = (data: any) => api.facultyPagination(url.FA
 export const addFacultyList = (data: any) => api.createFaculty(url.ADD_FACULTY_LIST, data);
 export const updateFacultyList = ({ id, updateFormData }: any) => api.updateFaculty(url.UPDATE_FACULTY_LIST, { id, updateFormData });
 export const deleteFacultyList = (id: any) => api.deleteFaculty(url.DELETE_FACULTY_LIST, id);
+export const createFacultyQrCodeList = (facultyAndCenterId: any) => api.createFacultyQrCode(url.FACULTY_QR_CODE, facultyAndCenterId)
 
 // Users Rate
 export const getUsersRateList = (data: any) => api.getUsersRate(url.GET_USERS_RATE, data);
-
-// Department QR
-export const createDepartmentQrCodeList = (departmentId: any) => api.createDepartmentQrCode(url.DEPARTMENT_QR_CODE, departmentId)
 
 // Application
 export const getApplicationList = (data: any, params?: any) => {
     return api.getApplication(url.GET_APPLICATION_LIST, data, params);
 };
-// export const applyApplicationList = (data: any) => {
-//     return api.applyApplication(url.APPLY_APPLICATION, data);
-// };
 export const deleteApplicationList = (id: number) => {
     return api.deleteApplication(url.DELETE_APPLICATION, id);
 };
@@ -66,7 +62,12 @@ export const setApplicationMeetingList = (id: number, meetAt: string) => {
 };
 export const getApplicationQrCodeList = () => api.getApplicationQrCode(url.APPLICATION_QR_CODE)
 
-
+// Rector
+export const getRectorList = () => api.getRector(url.GET_RECTOR_LIST);
+export const getRectorById = (id: number) => api.getRectorById(url.GET_RECTOR_BY_ID, id);
+export const deleteRector = (id: number) => api.deleteRector(url.DELETE_RECTOR, id);
+export const updateRector = (id: number, data: any) => api.updateRector(url.UPDATE_RECTOR, id, data);
+export const createRector = (data: any) => api.createRector(url.CREATE_RECTOR, data);
 
 
 

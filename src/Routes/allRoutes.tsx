@@ -22,6 +22,8 @@ import Department from "pages/Department/Department";
 import Application from "pages/Application/Application";
 import CreateDepartment from "pages/Department/CreateDepartment";
 import CreateAdmins from "pages/Authentication/createAdmins";
+import Rector from "pages/Rector/Rector";
+import CreateRector from "pages/Rector/CreateRector";
 
 
 
@@ -43,6 +45,9 @@ const authProtectedRoutes = [
     { path: "/department", name: "Department", component: <Department /> },
     { path: "/createDepartment", name: "Create department", component: <CreateDepartment /> },
     { path: "/createDepartment/:id", name: "Edit department", component: <CreateDepartment /> },
+    { path: "/rector", name: "Rector", component: <Rector /> },
+    { path: "/rector/create", name: "Create Rector", component: <CreateRector /> },
+    { path: "/rector/edit/:id", name: "Edit Rector", component: <CreateRector /> },
     { path: "/application", name: "Application", component: <Application /> },
 
 

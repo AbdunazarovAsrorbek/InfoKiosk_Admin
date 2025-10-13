@@ -5,7 +5,8 @@ import {
     facultyPaginationList as facultyPaginationListApi,
     addFacultyList as addFacultyListApi,
     updateFacultyList as updateFacultyListApi,
-    deleteFacultyList as deleteFacultyListApi
+    deleteFacultyList as deleteFacultyListApi,
+    createFacultyQrCodeList as createFacultyQrCodeListApi
 } from "../../helpers/helper";
 import { toast } from "react-toastify";
 
@@ -54,13 +55,28 @@ export const updateFacultyList = createAsyncThunk("Faculty/updateFaculty", async
     }
 });
 
-export const deleteFacultyList = createAsyncThunk("Faculty/deleteFacultyList", async (facultyId: any) => {
-    try {
-        const response = deleteFacultyListApi(facultyId);
-        toast.success("Faculty Deleted Successfully", { autoClose: 2000 });
-        return facultyId;
-    } catch (error) {
-        toast.error("Faculty Deleted Failed", { autoClose: 2000 });
-        return error;
+export const deleteFacultyList = createAsyncThunk(
+    "Faculty/deleteFacultyList",
+    async (facultyId: number, { rejectWithValue }) => {
+        try {
+            await deleteFacultyListApi(facultyId);
+            toast.success("Faculty Deleted Successfully", { autoClose: 2000 });
+            return facultyId;
+        } catch (error: any) {
+            toast.error("Faculty Delete Failed", { autoClose: 2000 });
+            return rejectWithValue(error);
+        }
     }
-})
+);
+
+
+export const createFacultyQrCodeList = createAsyncThunk("Faculty/createFacultyQrCodeList",
+    async (facultyAndCenterId: any) => {
+        try {
+            const response = await createFacultyQrCodeListApi(facultyAndCenterId);
+            return response;
+        } catch (error) {
+            return error
+        }
+    }
+);

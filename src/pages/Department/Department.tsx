@@ -4,13 +4,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import TableContainer from "Common/TableContainer";
 import { DeleteModal } from "Common/DeleteModal";
 import {
-    getDepartmentList as onGetDepartmentList,
     departmentPaginationList as onDepartmentPaginationList,
     deleteDepartmentList as onDeleteDepartmentList,
     createDepartmentQrCodeList as OnCreateDepartmentQrCodeList,
 } from "slices/department/thunk";
 import { useDispatch, useSelector } from "react-redux";
-import { createSelector } from "reselect";
 import { toast } from "react-toastify";
 import Pagination from "Common/Pagination";
 
@@ -27,19 +25,9 @@ const Department = () => {
     const size = 10;
 
     useEffect(() => {
-        dispatch(onDepartmentPaginationList({ page: pagination , size }));
-      }, [dispatch, pagination]);
+        dispatch(onDepartmentPaginationList({ page: pagination, size }));
+    }, [dispatch, pagination]);
 
-    const selectDepartmentContent = createSelector(
-        (state: any) => state.Department.departmentList,
-        (departmentList) => departmentList.content || []
-    );
-
-    const department = useSelector(selectDepartmentContent);
-
-    // useEffect(() => {
-    //     dispatch(onGetDepartmentList());
-    // }, [dispatch, pagination]);
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -57,8 +45,10 @@ const Department = () => {
     const handleChange = (ele: any) => {
         const search = ele.target.value.toLowerCase();
         setListView(
-            search ? department.filter((item: any) => item.name.toLowerCase().includes(search)) : department
-        );
+            search
+                ? (departmentPagination.content || []).filter((item: any) => item.name.toLowerCase().includes(search))
+                : departmentPagination.content || []
+        );;
     };
 
     const handleDeleteShow = (ele: any) => {
@@ -72,15 +62,18 @@ const Department = () => {
         if (deleteData) {
             dispatch(onDeleteDepartmentList(deleteData))
                 .unwrap()
-                .then(() => toast.success("Department Deleted Successfully", { autoClose: 2000 }))
+                .then(() => {
+                    toast.success("Department Deleted Successfully", { autoClose: 2000 });
+                    dispatch(onDepartmentPaginationList({ page: pagination, size }));
+                })
                 .catch(() => toast.error("Department Delete Failed", { autoClose: 2000 }));
         }
         setShow(false);
     };
 
     useEffect(() => {
-        setListView(department);
-    }, [department]);
+        setListView(departmentPagination.content || []);
+    }, [departmentPagination]);
 
     const handleQrClick = async (id: number) => {
         try {
@@ -158,7 +151,7 @@ const Department = () => {
                                         </Col>
                                     </Row>
                                 </Card.Header>
-                                <Card.Body>
+                                <Card.Body style={{ marginTop: "15px" }}>
                                     {listView?.length ? (
                                         <>
                                             <TableContainer

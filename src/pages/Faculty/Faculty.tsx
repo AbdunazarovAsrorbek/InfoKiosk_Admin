@@ -5,15 +5,14 @@ import TableContainer from "Common/TableContainer";
 import 'react-toastify/dist/ReactToastify.css';
 import { DeleteModal } from "Common/DeleteModal";
 import {
-    getFacultyList as onGetFacultyList,
     facultyPaginationList as onFacultyPagination,
     addFacultyList as onAddFacultyList,
     updateFacultyList as onUpdateFacultyList,
-    deleteFacultyList as onDeleteFacultyList
+    deleteFacultyList as onDeleteFacultyList,
+    createFacultyQrCodeList as onCreateFacultyQrCodeList
 } from "slices/faculty/thunk";
 import { useDispatch, useSelector } from "react-redux";
-import { ToastContainer } from "react-toastify";
-import { createSelector } from "reselect";
+import { ToastContainer, toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Pagination from "Common/Pagination";
@@ -24,6 +23,8 @@ const Faculty = () => {
     const dispatch = useDispatch<any>();
     const history = useNavigate();
     const location = useLocation();
+    const [qrUrl, setQrUrl] = useState<string | null>(null);
+    const [qrModalVisible, setQrModalVisible] = useState<boolean>(false);
 
     const facultyPagination = useSelector((state: any) => state.Faculty.facultyList);
     console.log(facultyPagination);
@@ -32,24 +33,8 @@ const Faculty = () => {
     const size = 10;
 
     useEffect(() => {
-        dispatch(onFacultyPagination({ page: pagination , size }));
+        dispatch(onFacultyPagination({ page: pagination, size }));
     }, [dispatch, pagination]);
-
-    const selectFacultyList = createSelector(
-        (state: any) => state.Faculty,
-        (faculty) => ({
-            facultyList: faculty.facultyList
-        })
-    );
-
-    const { facultyList } = useSelector(selectFacultyList);
-    console.log(facultyList);
-
-
-    useEffect(() => {
-        dispatch(onGetFacultyList());
-    }, [dispatch]);
-
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -80,11 +65,11 @@ const Faculty = () => {
     const handleChange = (ele: any) => {
         let search = ele.target.value.toLowerCase();
         if (search) {
-            setListView(facultyList.content?.filter((item: any) =>
+            setListView(facultyPagination.content?.filter((item: any) =>
                 item.name.toLowerCase().includes(search)
             ));
         } else {
-            setListView(facultyList.content);
+            setListView(facultyPagination.content);
         }
     };
 
@@ -97,21 +82,36 @@ const Faculty = () => {
         setShow(false);
     };
 
-    const deleteModalFunction = () => {
-        const deleteData = FacultyLists.row.original.id;
-        if (deleteData) {
-            dispatch(onDeleteFacultyList(deleteData)).then(() => {
-                dispatch(onGetFacultyList());
-            });
+    const deleteModalFunction = async () => {
+        const id = FacultyLists.row.original.id;
+        if (!id) return;
+        await dispatch(onDeleteFacultyList(id));
+        const current = listView.length - 1; 
+        if (current <= 0 && pagination > 1) {
+            setPagination(pagination - 1);
+        } else {
+            await dispatch(onFacultyPagination({ page: pagination, size }));
         }
         setShow(false);
     };
     
 
-    useEffect(() => {
-        setListView(facultyList?.content || []);
-    }, [facultyList]);
 
+
+    useEffect(() => {
+        setListView(facultyPagination?.content || []);
+    }, [facultyPagination]);
+
+    const handleQrClick = async (id: number) => {
+        try {
+            const blob = await dispatch(onCreateFacultyQrCodeList(id)).unwrap();
+            const url = URL.createObjectURL(blob);
+            setQrUrl(url);
+            setQrModalVisible(true);
+        } catch (err) {
+            toast.error("QR Code yoki PDF olishda xatolik", { autoClose: 2000 });
+        }
+    };
 
     const columns = useMemo(
         () => [
@@ -143,6 +143,28 @@ const Faculty = () => {
                 accessorKey: "name",
                 enableColumnFilter: false,
                 enableSorting: true,
+            },
+            {
+                header: "Status",
+                accessorKey: "status",
+                enableColumnFilter: false,
+                enableSorting: true,
+            },
+            {
+                header: "CreatedAt",
+                accessorKey: "createdAt",
+                enableColumnFilter: false,
+                enableSorting: true,
+            },
+            {
+                header: "QR Code",
+                enableColumnFilter: false,
+                enableSorting: false,
+                cell: (cell: any) => (
+                    <Button variant="info" size="sm" onClick={() => handleQrClick(cell.row.original.id)}>
+                        <i className="bi bi-qr-code"></i> QR
+                    </Button>
+                ),
             },
             {
                 header: "Action",
@@ -183,14 +205,14 @@ const Faculty = () => {
                 const data = { name: values.name, id: values.id };
                 dispatch(onUpdateFacultyList({ updateFormData: data, id: values.id }))
                     .then(() => {
-                        dispatch(onGetFacultyList());
+                        dispatch(onFacultyPagination({ page: pagination, size }));
                     });
                 formik.resetForm();
             } else {
                 const data = { name: values.name };
                 dispatch(onAddFacultyList(data))
                     .then(() => {
-                        dispatch(onGetFacultyList());
+                        dispatch(onFacultyPagination({ page: pagination, size }));
                     });
                 formik.resetForm();
             }
@@ -240,6 +262,7 @@ const Faculty = () => {
                                     {listView && listView.length > 0 ? (
                                         <>
                                             <TableContainer
+                                                key={facultyPagination?.totalElements}
                                                 isPagination={false}
                                                 columns={columns}
                                                 data={listView || []}
@@ -325,6 +348,29 @@ const Faculty = () => {
                     </Modal.Footer>
                 </Form>
             </Modal>
+
+            {qrModalVisible && qrUrl && (
+                <div className="qr-preview-modal" style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "rgba(0,0,0,0.5)",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    zIndex: 9999
+                }}>
+                    <div style={{ width: "80%", backgroundColor: "#fff", padding: "20px", borderRadius: "8px", position: "relative" }}>
+                        <Button style={{ position: "absolute", top: "10px", right: "21px" }} onClick={() => setQrModalVisible(false)}>Close</Button>
+                        <a href={qrUrl} download style={{ marginBottom: "10px", display: "inline-block" }}>
+                            Download QR / PDF
+                        </a>
+                        <iframe src={qrUrl} width="100%" height="600" style={{ border: "1px solid #ccc", borderRadius: "8px" }} title="QR/PDF Preview" />
+                    </div>
+                </div>
+            )}
 
             <ToastContainer />
         </React.Fragment>

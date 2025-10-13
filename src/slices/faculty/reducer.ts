@@ -28,9 +28,9 @@ const FacultySlice = createSlice({
         builder.addCase(getFacultyList.rejected, (state: any, action: any) => {
             state.error = action.payload.error || null;
         });
-       
+
         builder.addCase(facultyPaginationList.fulfilled, (state: any, action: any) => {
-            state.facultyList = action.payload; 
+            state.facultyList = action.payload;
         });
         builder.addCase(facultyPaginationList.rejected, (state: any, action: any) => {
             state.error = action.payload.error || null;
@@ -60,11 +60,11 @@ const FacultySlice = createSlice({
 
         builder.addCase(deleteFacultyList.fulfilled, (state: any, action: any) => {
             state.facultyList.content = state.facultyList.content.filter(
-                (FacultyList: any) => FacultyList.id !== action.payload
+                (f: any) => f.id !== action.payload
             );
-        });
+        })
         builder.addCase(deleteFacultyList.rejected, (state: any, action: any) => {
-            state.error = action.payload.error || null;
+            state.error = action.error || null;
         });
     }
 });

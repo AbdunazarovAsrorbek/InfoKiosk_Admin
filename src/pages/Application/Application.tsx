@@ -38,6 +38,8 @@ const Application = () => {
         })
     );
     const { applicationList } = useSelector(selectApplication);
+    console.log(applicationList);
+
     const totalPages = useSelector(
         (state: any) => state.Application.applicationList?.totalPages || 1
     );
@@ -49,6 +51,8 @@ const Application = () => {
     const [toDate, setToDate] = useState<string>("");
     const [qrUrl, setQrUrl] = useState<string | null>(null);
     const [qrModalVisible, setQrModalVisible] = useState<boolean>(false);
+    const [selectedApp, setSelectedApp] = useState<any | null>(null);
+    const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
 
     // Filter + search
     const handleChange = (e: any) => {
@@ -161,7 +165,7 @@ const Application = () => {
             to: toDate || undefined,
             status: activeButton ? activeButton.toUpperCase() : undefined,
         }));
-    }, [dispatch, pagination]);
+    }, [dispatch, pagination, activeButton]);
 
     // URL param update
     useEffect(() => {
@@ -173,9 +177,16 @@ const Application = () => {
     // Reduxdan kelgan data → local state
     useEffect(() => {
         if (applicationList?.content) {
-            setListView(applicationList.content);
+            // Agar status filter ishlatayotgan bo'lsa, filter qilib beramiz
+            if (activeButton) {
+                filterList(activeButton, fromDate, toDate);
+            } else {
+                setListView(applicationList.content);
+            }
         }
     }, [applicationList]);
+
+
 
     // Table columns
     const columns = useMemo(
@@ -187,18 +198,30 @@ const Application = () => {
             {
                 header: "Full Name",
                 accessorKey: "fullName",
+                cell: (cell: any) => {
+                    const text = cell.getValue() || "";
+                    return text.split(" ").length > 15
+                        ? text.split(" ").slice(0, 15).join(" ") + "..."
+                        : text;
+                },
             },
             {
                 header: "Phone",
                 accessorKey: "phoneNumber",
             },
             {
-                header: "Faculty",
-                accessorKey: "facultyName",
+                header: "Description",
+                accessorKey: "description",
+                cell: (cell: any) => {
+                    const text = cell.getValue() || "";
+                    return text.split(" ").length > 15
+                        ? text.split(" ").slice(0, 15).join(" ") + "..."
+                        : text;
+                },
             },
             {
-                header: "Department",
-                accessorKey: "departmentName",
+                header: "Rector Name",
+                accessorKey: "rektorName",
             },
             {
                 header: "Status",
@@ -214,28 +237,48 @@ const Application = () => {
                     const item = cell.row.original;
                     return (
                         <ul className="d-flex gap-2 list-unstyled mb-0">
+                            <li>
+                                {/* View Icon */}
+                                <Link
+                                    to="#"
+                                    className="btn btn-subtle-primary btn-icon btn-sm"
+                                    onClick={() => {
+                                        setSelectedApp(item);
+                                        setDetailModalVisible(true);
+                                    }}
+                                >
+                                    <i className="ph-eye"></i>
+                                </Link>
+                            </li>
+
                             {item.status?.toLowerCase() === "pending" && (
                                 <>
                                     <li>
-                                        <Link to="#"
+                                        <Link
+                                            to="#"
                                             className="btn btn-subtle-danger btn-icon btn-sm"
-                                            onClick={() => handleReject(item)}>
+                                            onClick={() => handleReject(item)}
+                                        >
                                             <i className="ph-x-thin"></i>
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link to="#"
+                                        <Link
+                                            to="#"
                                             className="btn btn-subtle-success btn-icon btn-sm"
-                                            onClick={() => handleAccept(item)}>
+                                            onClick={() => handleAccept(item)}
+                                        >
                                             <i className="ph-check-thin"></i>
                                         </Link>
                                     </li>
                                 </>
                             )}
                             <li>
-                                <Link to="#"
+                                <Link
+                                    to="#"
                                     className="btn btn-subtle-warning btn-icon btn-sm"
-                                    onClick={() => handleDelete(item)}>
+                                    onClick={() => handleDelete(item)}
+                                >
                                     <i className="ph-trash"></i>
                                 </Link>
                             </li>
@@ -266,11 +309,11 @@ const Application = () => {
                                         </Col>
                                         <Col className="col-md-auto">
                                             <Form.Select className="search" onChange={handleSort}>
-                                                <option value="pending">Pending</option>
-                                                <option value="accepted">Accepted</option>
-                                                <option value="rejected">Rejected</option>
-                                                <option value="archived">Archived</option>
-                                                <option value="meeting">Meeting</option>
+                                                <option value="PENDING">Pending</option>
+                                                <option value="ACCEPTED">Accepted</option>
+                                                <option value="REJECTED">Rejected</option>
+                                                <option value="ARCHIVED">Archived</option>
+                                                <option value="MEETING">Meeting</option>
                                             </Form.Select>
                                         </Col>
                                         <Col className="col-md-auto">
@@ -363,6 +406,38 @@ const Application = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            {/* Detail Modal */}
+            <Modal
+                show={detailModalVisible}
+                onHide={() => setDetailModalVisible(false)}
+                size="lg"
+                centered
+            >
+                {/* <Modal.Header closeButton>
+                    <Modal.Title>Application Details</Modal.Title>
+                </Modal.Header> */}
+                <Modal.Body>
+                    {selectedApp ? (
+                        <div>
+                            <p><strong>Full Name:</strong> {selectedApp.fullName}</p>
+                            <p><strong>Phone:</strong> {selectedApp.phoneNumber}</p>
+                            <p><strong>Description:</strong> {selectedApp.description}</p>
+                            <p><strong>Rector Name:</strong> {selectedApp.rektorName}</p>
+                            <p><strong>Status:</strong> {selectedApp.status}</p>
+                            <p><strong>Created Date:</strong> {selectedApp.createdDate}</p>
+                        </div>
+                    ) : (
+                        <p>No data</p>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setDetailModalVisible(false)}>
+                        Yopish
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
 
             <ToastContainer />
         </React.Fragment>

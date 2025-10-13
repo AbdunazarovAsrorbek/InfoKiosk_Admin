@@ -13,6 +13,7 @@ const Navdata = () => {
     const [isVacancy, setIsVacancy] = useState(false);
     const [isDepartment, setIsDepartment] = useState(false);
     const [isProfile, setIsProfile] = useState(false);
+    const [isRector, setIsRector] = useState(false);
 
     // Components
     const [isBootstrapUi, setIsBootstrapUi] = useState(false);
@@ -135,6 +136,7 @@ const Navdata = () => {
         isVacancy,
         isDepartment,
         isProfile,
+        isRector,
         isBootstrapUi,
         isAdvanceUi,
         isWidgets,
@@ -213,6 +215,31 @@ const Navdata = () => {
             label: "Users Rate  ",
             icon: "ph-users",
             link: "/userStatistik",
+        },
+        {
+            id: "rector",
+            label: "Rectorate",
+            icon: "ph-user-circle-gear",
+            link: "/#",
+            click: function (e: any) {
+                e.preventDefault();
+                setIsRector(!isRector);
+                setIscurrentState('Rector');
+                updateIconSidebar(e);
+            },
+            stateVariables: isRector,
+            subItems: [
+                {
+                    id: "rector",
+                    label: "Rectorate",
+                    link: "/rector",
+                },
+                {
+                    id: "createRector",
+                    label: "Create Rector",
+                    link: "/rector/create",
+                },
+            ]
         },
         {
             id: "application",

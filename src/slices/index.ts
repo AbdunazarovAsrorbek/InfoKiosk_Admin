@@ -11,6 +11,7 @@ import FacultyReducer from "./faculty/reducer";
 import DepartmentReducer from "./department/reducer";
 import UsersrateReducer from "./usersRate/reducer";
 import ApplicationReducer from "./application/reducer";
+import RectorReducer from "./rector/reducer";
 
 const rootReducer = combineReducers({
     Layout: LayoutReducer,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
     Department: DepartmentReducer,
     UsersRate: UsersrateReducer,
     Application: ApplicationReducer,
+    Rector: RectorReducer,
 });
 
 export default rootReducer;

@@ -1,7 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
     getApplicationList as getApplicationListApi,
-    // applyApplicationList as applyApplicationListApi,
     deleteApplicationList as deleteApplicationListApi,
     changeApplicationStatusList as changeApplicationStatusListApi,
     setApplicationMeetingList as setApplicationMeetingListApi,
@@ -27,20 +26,6 @@ export const getApplicationList = createAsyncThunk(
         }
     }
 );
-
-
-// APPLY
-// export const applyApplicationList = createAsyncThunk(
-//     "Application/applyApplicationList",
-//     async (data: any) => {
-//         try {
-//             const response = await applyApplicationListApi(data);
-//             return response;
-//         } catch (error: any) {
-//             throw error.response?.data || error.message;
-//         }
-//     }
-// );
 
 // DELETE
 export const deleteApplicationList = createAsyncThunk(

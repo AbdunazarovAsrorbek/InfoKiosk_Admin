@@ -87,7 +87,7 @@ const Header = () => {
                             </Button>
 
                             {/* SearchModal */}
-                            <SearchOption/>
+                            {/* <SearchOption/> */}
                         </div>
 
                         <div className="d-flex align-items-center">
@@ -104,7 +104,7 @@ const Header = () => {
                             {/*<BrowseAppsDropdown />*/}
 
                             {/* Language Dropdown */}
-                            <Language />
+                            {/* <Language /> */}
 
                             {/* My Cart Dropdown */}
                             {/*<MyCartDropdown/>*/}

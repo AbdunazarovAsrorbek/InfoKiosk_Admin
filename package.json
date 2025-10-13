@@ -72,6 +72,7 @@
     "react-jvectormap": "^0.0.16",
     "react-leaflet": "^4.2.1",
     "react-number-format": "^5.3.1",
+    "react-quill": "^2.0.0",
     "react-redux": "^9.0.2",
     "react-responsive-masonry": "^2.1.7",
     "react-router-dom": "^7.1.5",

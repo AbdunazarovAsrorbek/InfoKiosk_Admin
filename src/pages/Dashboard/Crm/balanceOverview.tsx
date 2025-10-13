@@ -10,7 +10,9 @@ import dayjs from "dayjs";
 const generateUniqueColors = (count: number) => {
     const colors: string[] = [];
     while (colors.length < count) {
-        const color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0")}`;
+        const color = `#${Math.floor(Math.random() * 16777215)
+            .toString(16)
+            .padStart(6, "0")}`;
         if (!colors.includes(color)) {
             colors.push(color);
         }
@@ -21,27 +23,27 @@ const generateUniqueColors = (count: number) => {
 const BalanceOverview = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch<any>();
-    const selectOverallList = (state: any) => state.Overall?.overallList;
-    const overallList = useSelector(selectOverallList);
 
-    // inputlar uchun state
+    const selectOverallList = (state: any) => state.Overall?.overallList;
+    const overallList: any[] = useSelector(selectOverallList);
+    const safeOverallList = Array.isArray(overallList) ? overallList : [];
+
     const [from, setFrom] = useState("");
     const [to, setTo] = useState("");
 
     useEffect(() => {
         const today = dayjs().format("YYYY-MM-DD");
-        dispatch(onGetOverallList({ from: "1975-01-01", to: today }));
+        dispatch(onGetOverallList({ from: dayjs().subtract(1, "year").format("YYYY-MM-DD"), to: today }));
     }, [dispatch]);
 
     const chartData = useMemo(() => {
-        if (!overallList || !Array.isArray(overallList)) return [];
-        return overallList.map((academy: any) => ({
+        return safeOverallList.map((academy: any) => ({
             name: academy.name,
             data: [academy.averageRate],
         }));
-    }, [overallList]);
+    }, [safeOverallList]);
 
-    const chartColors = generateUniqueColors(overallList?.length || 0);
+    const chartColors = generateUniqueColors(safeOverallList.length);
 
     const getRateColor = (rate: number) => {
         if (rate < 3) return "text-danger ";
@@ -55,7 +57,6 @@ const BalanceOverview = () => {
         return "text-success ";
     };
 
-    // tugmalar uchun handler
     const handleFilter = (range: "1m" | "6m" | "1y" | "all") => {
         const today = dayjs().format("YYYY-MM-DD");
         let fromDate = "";
@@ -63,12 +64,11 @@ const BalanceOverview = () => {
         if (range === "1m") fromDate = dayjs().subtract(1, "month").format("YYYY-MM-DD");
         if (range === "6m") fromDate = dayjs().subtract(6, "month").format("YYYY-MM-DD");
         if (range === "1y") fromDate = dayjs().subtract(1, "year").format("YYYY-MM-DD");
-        if (range === "all") fromDate = "1975-01-01";
+        if (range === "all") fromDate = "2025-01-01";
 
         dispatch(onGetOverallList({ from: fromDate, to: today }));
     };
 
-    // custom input filter
     const handleCustomFilter = () => {
         if (from && to) {
             dispatch(onGetOverallList({ from, to }));
@@ -107,7 +107,11 @@ const BalanceOverview = () => {
                         </Button>
                     </div>
 
-                    <BasicColumn periodData={chartData} dataColors={chartColors} />
+                    {chartData.length > 0 ? (
+                        <BasicColumn periodData={chartData} dataColors={chartColors} />
+                    ) : (
+                        <div className="text-center text-muted">Grafik ma’lumot mavjud emas</div>
+                    )}
 
                     <div className="table-responsive mt-3">
                         <Table className="align-middle table-nowrap mb-0">
@@ -122,9 +126,9 @@ const BalanceOverview = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {overallList?.length > 0 ? (
-                                    overallList?.map((academy: any, index: number) => (
-                                        <tr key={academy.id}>
+                                {safeOverallList.length > 0 ? (
+                                    safeOverallList.map((academy: any, index: number) => (
+                                        <tr key={academy.id || index}>
                                             <td className="fw-semibold text-start">
                                                 <i
                                                     className="bi bi-diamond-fill me-1"

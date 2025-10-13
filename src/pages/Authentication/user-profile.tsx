@@ -20,6 +20,16 @@ const UserProfile = () => {
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
 
+    const passwordValidationSchema = Yup.object({
+        oldPassword: Yup.string()
+            .required("Old password required"),
+
+        newPassword: Yup.string()
+            .min(8, "Parol kamida 8 ta belgidan iborat bo‘lishi kerak")
+            .matches(/[A-Z]/, "Parolda kamida bitta katta harf bo‘lishi kerak")
+            .matches(/\d/, "Parolda kamida bitta raqam bo‘lishi kerak")
+            .required("New password required"),
+    });
     const admin = useSelector((state: any) => state.Admin.adminProfile);
 
     useEffect(() => {
@@ -48,14 +58,9 @@ const UserProfile = () => {
 
     const passwordFormik = useFormik({
         initialValues: { oldPassword: "", newPassword: "" },
-        validationSchema: Yup.object({
-            oldPassword: Yup.string().required("Old password required"),
-            newPassword: Yup.string().required("New password required"),
-        }),
+        validationSchema: passwordValidationSchema,
         onSubmit: (values) => {
-            if (!admin?.username) return;
             dispatch(changePassword({
-                username: admin.username,
                 oldPassword: values.oldPassword,
                 newPassword: values.newPassword
             }));
@@ -150,7 +155,7 @@ const UserProfile = () => {
                                                 name="oldPassword"
                                                 value={passwordFormik.values.oldPassword}
                                                 onChange={passwordFormik.handleChange}
-                                                isInvalid={!!passwordFormik.errors.oldPassword}
+                                                isInvalid={passwordFormik.submitCount > 0 && !!passwordFormik.errors.oldPassword}
                                             />
                                             <Button
                                                 type="button"
@@ -161,6 +166,9 @@ const UserProfile = () => {
                                                 {showOldPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
                                             </Button>
                                         </div>
+                                        <Form.Control.Feedback type="invalid">
+                                            {passwordFormik.errors.oldPassword}
+                                        </Form.Control.Feedback>
                                     </Form.Group>
 
                                     <Form.Group className="mb-3">
@@ -171,7 +179,8 @@ const UserProfile = () => {
                                                 name="newPassword"
                                                 value={passwordFormik.values.newPassword}
                                                 onChange={passwordFormik.handleChange}
-                                                isInvalid={!!passwordFormik.errors.newPassword}
+                                                onBlur={passwordFormik.handleBlur}
+                                                isInvalid={passwordFormik.submitCount > 0 && !!passwordFormik.errors.newPassword}
                                             />
                                             <Button
                                                 type="button"
@@ -182,12 +191,19 @@ const UserProfile = () => {
                                                 {showNewPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
                                             </Button>
                                         </div>
+
+                                        {passwordFormik.submitCount > 0 && passwordFormik.errors.newPassword && (
+                                            <div style={{ color: "red", marginTop: "5px", fontSize: "0.9rem" }}>
+                                                {passwordFormik.errors.newPassword}
+                                            </div>
+                                        )}
                                     </Form.Group>
 
                                     <div className="text-end">
                                         <Button type="submit" variant="primary">Change Password</Button>
                                     </div>
                                 </Form>
+
                             </Card.Body>
                         </Card>
                     </Col>

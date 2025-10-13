@@ -13,7 +13,7 @@ import { useFormik } from "formik";
 // actions
 import { loginUser, resetLoginFlag } from "../../slices/thunk";
 import { createSelector } from 'reselect';
-
+import logo from "../../assets/img/logo.png"
 
 //import images
 
@@ -66,9 +66,15 @@ const Signin = (props: any) => {
                 <Col xxl="6" className="mx-auto">
                     <Card className="mb-0 border-0 shadow-none mb-0">
                         <Card.Body className="p-sm-5 m-lg-4">
-                            <div className="text-center mt-5">
-                                <h5 className="fs-3xl">Hush kelibsiz</h5>
-                                <p className="text-muted">Bir tugmali baholash Web saytimizga!</p>
+                            <div className={"d-flex justify-content-center mb-3"}>
+                                <img src={logo} alt="logo" className={""} style={{ width: "80px", height: "80px" }} />
+                            </div>
+                            <div className="text-center">
+                                {/*<h5 className="fs-3xl">Hush kelibsiz</h5>*/}
+                                <p className="text-muted px-1">
+                                    Muhammad al-Xorazmiy nomidagi Toshkent Axborot Texnologiyalari Universitetining
+                                    bir tugmali baholash tizimi admin sahifasi.
+                                </p>
                             </div>
                             <div className="p-2 mt-5">
                                 {error && error ? (<Alert variant="danger"> {error} </Alert>) : null}
